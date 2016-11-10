@@ -160,6 +160,7 @@ func (this *UserApi) getToken() (bool, string) {
 		}
 
 		resp, _ := this.client.PostForm(USER_TOKEN_API, ghostlib.InitPostData(post_arg))
+		defer resp.Body.Close()
 		data, _ := ioutil.ReadAll(resp.Body)
 
 		//fmt.Printf("U:%s\n", string(data))
@@ -198,6 +199,7 @@ func (this *UserApi) doUserApi(post_arg map[string]interface{}) *map[string]inte
 	post_arg["access_token"] = this.access_token
 
 	resp, _ := this.client.PostForm(USER_CORE_API, ghostlib.InitPostData(post_arg))
+	defer resp.Body.Close()
 	data, _ := ioutil.ReadAll(resp.Body)
 
 	json_result, err := simplejson.NewJson(data)
@@ -250,6 +252,7 @@ func (this *FinanceApi) getToken() (bool, string) {
 	}
 
 	resp, _ := this.client.PostForm(FINANCE_TOKEN_API, ghostlib.InitPostData(post_arg))
+	defer resp.Body.Close()
 	data, _ := ioutil.ReadAll(resp.Body)
 
 	json_result, err := simplejson.NewJson(data)
@@ -286,6 +289,7 @@ func (this *FinanceApi) doFinanceApi(post_arg map[string]interface{}) *map[strin
 	post_arg["access_token"] = this.access_token
 
 	resp, _ := this.client.PostForm(FINANCE_CORE_API, ghostlib.InitPostData(post_arg))
+	defer resp.Body.Close()
 	data, _ := ioutil.ReadAll(resp.Body)
 
 	json_result, err := simplejson.NewJson(data)
