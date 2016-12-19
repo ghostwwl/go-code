@@ -1,5 +1,5 @@
 /*****************************************
- * FileName : txt2voice.go
+ * FileName : txt2voice
  * Author   : ghostwwl
  * Note     : 测试百度语音的语音合成API呢
  *            将 中文 --> 语音 用的百度TTS呢
@@ -9,6 +9,7 @@ package main
 
 import (
 	//	"fmt"
+	"encoding/json"
 	"ghostlib"
 	"io/ioutil"
 	"net/http"
@@ -18,8 +19,8 @@ import (
 )
 
 const (
-	BAIDU_VOICE_KEY  = "******************"   // yuyin.baidu.com 自己申请去 反正百度或永久免费
-	BAIDU_VOICE_CRET = "*******************"
+	BAIDU_VOICE_KEY  = "************************" // yuyin.baidu.com 自己申请去 反正百度或永久免费
+	BAIDU_VOICE_CRET = "************************"
 )
 
 const (
@@ -28,6 +29,13 @@ const (
 
 	API_TIMEOUT = 120
 )
+
+type VoiceError struct {
+	err_no  int    `json:"err_no"`
+	err_msg string `json:"err_msg"`
+	sn      string `json:"sn"`
+	idx     int    `json:"idx"`
+}
 
 type TxtToVoice struct {
 	client       *http.Client
@@ -92,12 +100,21 @@ func (this *TxtToVoice) GetVoice(intxt string) (bool, []byte) {
 	defer resp.Body.Close()
 	data, _ := ioutil.ReadAll(resp.Body)
 
-	if resp.Header["Content-Type"][0] == "application/json" {
-		return false, data
-	} else {
+	contentType := resp.Header.Get("Content-type")
+	switch contentType {
+	case "audio/mp3":
 		return true, data
+	case "application/json":
+		var errobj VoiceError
+		if err := json.Unmarshal(data, &errobj); nil != err {
+			return false, []byte(ghostlib.ToString(err))
+			//panic(err.Error())
+		} else {
+			return false, []byte(errobj.err_msg)
+		}
 	}
 
+	return false, nil
 }
 
 func main() {
@@ -112,9 +129,9 @@ func main() {
 	if !flag {
 		ghostlib.Msg(string(result), 3)
 	} else {
-		err := ioutil.WriteFile("/data0/bd_voice.mp3", result, 766)
+		err := ioutil.WriteFile("/data1/bd_voice.mp3", result, 766)
 		if err != nil {
-			ghostlib.Msg("写入结果文件[/data0/bd_voice.mp3]出错", 3)
+			ghostlib.Msg("写入结果文件[/data1/bd_voice.mp3]出错", 3)
 		}
 	}
 
