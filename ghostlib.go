@@ -11,6 +11,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"reflect"
 	"net/url"
 	"strconv"
 	"strings"
@@ -24,6 +25,16 @@ const (
 	GFrmTime     = "15:04:05"
 	GFrmDay      = "2006-01-02"
 )
+
+func Struct2Map(obj interface{}) map[string]interface{} {
+	result := make(map[string]interface{})
+	objT := reflect.TypeOf(obj)
+	objV := reflect.ValueOf(obj)
+	for i := 0; i < objT.NumField(); i++ {
+		result[objT.Field(i).Name] = objV.Field(i).Interface()
+	}
+	return result
+}
 
 func GetMd5(instr string) string {
 	sum := md5.Sum([]byte(instr))
