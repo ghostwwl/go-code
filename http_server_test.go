@@ -40,6 +40,7 @@ func PathExists(fpath string) bool {
 	return false
 }
 
+var STATIC_PATH_MAP map[string]string
 
 func runHttpService2() {
 	mux := http.NewServeMux()
@@ -61,10 +62,29 @@ func runHttpService2() {
 
 
 
-	STATIC_PATH_MAP := make(map[string]string)
+	STATIC_PATH_MAP = make(map[string]string)
 	STATIC_PATH_MAP["/src"] = "./test"
 	STATIC_PATH_MAP["/baidu"] = "/data/ghostwwl/html-百度"
 
+	// 运行过程中动态增加静态目录呢
+	mux.HandleFunc("/add_static", func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseForm()
+		if err != nil {
+			fmt.Fprintf(w, "\nerror: %v", err)
+			//return
+		}
+		src := r.Form.Get("s")
+		local := r.Form.Get("l")
+
+		if len(src) < 1 && len(local) < 1 {
+			fmt.Fprintf(w, "参数错误")
+			return
+		}
+
+		STATIC_PATH_MAP[src] = local
+		fmt.Fprintf(w, "%v", STATIC_PATH_MAP)
+		fmt.Fprintf(w, "OK")
+	})
 
 	// 其它情况的handle呢
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
