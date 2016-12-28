@@ -17,7 +17,6 @@ import (
 	"net/http"
 	"os/exec"
 
-	_ "./mysql"
 	//"net"
 	//"strings"
 	"strings"
