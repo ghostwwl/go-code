@@ -98,7 +98,7 @@ func runHttpService2() {
 			if PathExists(local_file_path) {
 				http.ServeFile(w, r, local_file_path)
 			} else {
-				http.NotFound(w, r)
+				http.Error(w, "File Not Exists", 404)
 			}
 			return
 		}
