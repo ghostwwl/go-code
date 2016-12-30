@@ -147,7 +147,7 @@ func runHttpService2() {
 		fmt.Fprintf(w, "\nGET: %v", r.URL.Query())
 		fmt.Fprintf(w, "\nGET: %v", r.Form)
 		fmt.Fprintf(w, "\nPOST: %v", r.PostForm)
-		err = r.ParseMultipartForm(16 << 10) // 16 mb
+		err = r.ParseMultipartForm(16 << 10)
 		if nil != err {
 			fmt.Fprintf(w, "\nParseMultipartForm Error: %v", err)
 		} else {
