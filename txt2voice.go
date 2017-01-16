@@ -31,10 +31,10 @@ const (
 )
 
 type VoiceError struct {
-	err_no  int    `json:"err_no"`
-	err_msg string `json:"err_msg"`
-	sn      string `json:"sn"`
-	idx     int    `json:"idx"`
+	Err_no  int    `json:"err_no"`
+	Err_msg string `json:"err_msg"`
+	Sn      string `json:"sn"`
+	Idx     int    `json:"idx"`
 }
 
 type TxtToVoice struct {
@@ -110,7 +110,7 @@ func (this *TxtToVoice) GetVoice(intxt string) (bool, []byte) {
 			return false, []byte(ghostlib.ToString(err))
 			//panic(err.Error())
 		} else {
-			return false, []byte(errobj.err_msg)
+			return false, []byte(errobj.Err_msg)
 		}
 	}
 
