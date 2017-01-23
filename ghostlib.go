@@ -7,8 +7,6 @@ Note: 可能经常用到的小函数了 对应已有的 ghostlib.py
 **/
 
 import (
-	//"encoding/json"
-	"crypto/md5"
 	"encoding/hex"
 	"fmt"
 	"reflect"
@@ -37,9 +35,7 @@ func Struct2Map(obj interface{}) map[string]interface{} {
 }
 
 func GetMd5(instr string) string {
-	sum := md5.Sum([]byte(instr))
-	str := hex.EncodeToString(sum[:])
-	return str
+	return fmt.Sprintf("%x", md5.Sum([]byte(instr)))
 }
 
 func CurrentTimeStamp() int64 {
