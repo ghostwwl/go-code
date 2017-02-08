@@ -41,12 +41,6 @@ func GetMd5(instr string) string {
 	return hex.EncodeToString(sum[:])
 }
 
-
-func GetSha1(instr string) string {
-	sum := sha1.Sum([]byte(instr))
-	return hex.EncodeToString(sum[:])
-}
-
 func Utf8Strlen(instr string) int {
 	return utf8.RuneCountInString(instr)
 }
