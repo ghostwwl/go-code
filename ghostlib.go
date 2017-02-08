@@ -8,6 +8,8 @@ Note: 可能经常用到的小函数了 对应已有的 ghostlib.py
 
 import (
 	"encoding/hex"
+	"crypto/md5"
+	"unicode/utf8"
 	"fmt"
 	"reflect"
 	"net/url"
@@ -19,6 +21,7 @@ import (
 )
 
 const (
+	GFrmDateTimeMillisecond = "2006-01-02 15:04:05.99999"
 	GFrmDateTime = "2006-01-02 15:04:05"
 	GFrmTime     = "15:04:05"
 	GFrmDay      = "2006-01-02"
@@ -33,10 +36,47 @@ func Struct2Map(obj interface{}) map[string]interface{} {
 	}
 	return result
 }
-
 func GetMd5(instr string) string {
-	return fmt.Sprintf("%x", md5.Sum([]byte(instr)))
+	sum := md5.Sum([]byte(instr))
+	return hex.EncodeToString(sum[:])
 }
+
+
+func GetSha1(instr string) string {
+	sum := sha1.Sum([]byte(instr))
+	return hex.EncodeToString(sum[:])
+}
+
+func Utf8Strlen(instr string) int {
+	return utf8.RuneCountInString(instr)
+}
+
+func Utf8SubStr(instr string, start_pos, sublen int) string {
+	if sublen < 1 {
+		return ""
+	}
+
+	rune_str := []rune(instr)
+	real_len := len(rune_str)
+	
+	if real_len == 0 {
+		return ""
+	}
+
+	if start_pos < 0 {
+		start_pos = 0
+	}
+	if start_pos >= real_len {
+		return ""
+	}
+	end_pos := start_pos + sublen
+	if end_pos > real_len {
+		return string(rune_str[start_pos:])
+	} else {
+		return string(rune_str[start_pos:end_pos])
+	}
+}
+
 
 func CurrentTimeStamp() int64 {
 	return time.Now().Unix()
