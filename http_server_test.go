@@ -147,7 +147,7 @@ func runHttpService2() {
 		fmt.Fprintf(w, "\nGET: %v", r.URL.Query())
 		fmt.Fprintf(w, "\nGET: %v", r.Form)
 		fmt.Fprintf(w, "\nPOST: %v", r.PostForm)
-		err = r.ParseMultipartForm(16 << 10)
+		err = r.ParseMultipartForm(16 << 20)
 		if nil != err {
 			fmt.Fprintf(w, "\nParseMultipartForm Error: %v", err)
 		} else {
@@ -159,7 +159,7 @@ func runHttpService2() {
 		// r.Form 获取到的是 GET 和 url-encode 方式POST的 MAP
 		// r.PostForm 获取到 url-encode post的 参数
 
-		// r.ParseMultipartForm(16 << 10) // 16 mb -- 如果connected不是 multipart/form-data 会报错
+		// r.ParseMultipartForm(16 << 20) // 16 mb -- 如果connected不是 multipart/form-data 会报错
 		// r.MultipartForm.Value 获取到的是 multipart/form-data 上传的 MAP 这个时候 r.PostForm 是空的
 
 	})
