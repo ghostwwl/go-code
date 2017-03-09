@@ -39,10 +39,7 @@ func (this *Queue) task_done() {
 	defer this.AllTasksDone.L.Unlock()
 
 	unfinished := this.UnfinishedTasks - 1
-	if unfinished <= 0 {
-		if unfinished < 0 {
-			panic("called too many times")
-		}
+	if unfinished == 0 {
 		this.AllTasksDone.Broadcast()
 		this.UnfinishedTasks = unfinished
 	}
