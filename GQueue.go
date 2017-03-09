@@ -34,7 +34,7 @@ func NewQueue() *Queue {
 	return obj
 }
 
-func (this *Queue) task_done() {
+func (this *Queue) TaskDone() {
 	this.AllTasksDone.L.Lock()
 	unfinished := this.UnfinishedTasks - 1
 	if unfinished <= 0 {
@@ -47,7 +47,7 @@ func (this *Queue) task_done() {
 	this.AllTasksDone.L.Unlock()
 }
 
-func (this *Queue) join() {
+func (this *Queue) Join() {
 	this.AllTasksDone.L.Lock()
 	for {
 		if this.UnfinishedTasks > 0 {
