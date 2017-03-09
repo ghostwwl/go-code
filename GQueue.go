@@ -36,18 +36,19 @@ func NewQueue() *Queue {
 
 func (this *Queue) task_done() {
 	this.AllTasksDone.L.Lock()
-	defer this.AllTasksDone.L.Unlock()
-
 	unfinished := this.UnfinishedTasks - 1
-	if unfinished == 0 {
+	if unfinished <= 0 {
+		if unfinished < 0 {
+			panic("called too many times")
+		}
 		this.AllTasksDone.Broadcast()
 		this.UnfinishedTasks = unfinished
 	}
+	this.AllTasksDone.L.Unlock()
 }
 
 func (this *Queue) join() {
 	this.AllTasksDone.L.Lock()
-	this.AllTasksDone.L.Unlock()
 	for {
 		if this.UnfinishedTasks > 0 {
 			this.AllTasksDone.Wait()
@@ -55,33 +56,33 @@ func (this *Queue) join() {
 			break
 		}
 	}
+	this.AllTasksDone.L.Unlock()
 }
 
 func (this *Queue) Qsize() int {
 	this.Mutex.Lock()
-	defer this.Mutex.Unlock()
-
-	return this.List.Len()
+	n := this.List.Len()
+	this.Mutex.Unlock()
+	return n
 }
 
 func (this *Queue) IsEmpty() bool {
-	this.Mutex.Lock()
-	defer this.Mutex.Unlock()
-
-	return this.List.Len() <= 0
+	if this.Qsize() > 0{
+		return false
+	} 
+	return true
 }
 
 func (this *Queue) IsFull() bool {
 	this.Mutex.Lock()
-	defer this.Mutex.Unlock()
-
-	n := this.Qsize()
-	return n > 0 && uint32(n) == this.MaxSize
+	n := this.List.Len()
+	r := n > 0 && uint32(n) == this.MaxSize
+	this.Mutex.Unlock()
+	return r
 }
 
 func (this *Queue) Put(item interface{}) {
 	this.NotFull.L.Lock()
-	defer this.NotFull.L.Unlock()
 	if this.MaxSize > 0 {
 		if uint32(this.List.Len()) == this.MaxSize {
 			this.NotFull.Wait()
@@ -90,17 +91,18 @@ func (this *Queue) Put(item interface{}) {
 	this.List.PushBack(item)
 	this.UnfinishedTasks++
 	this.NotEmpty.Signal()
+	this.NotFull.L.Unlock()
 }
 
 func (this *Queue) Get() interface{} {
 	this.NotEmpty.L.Lock()
-	defer this.NotEmpty.L.Unlock()
 	if this.List.Len() <= 0 {
 		this.NotEmpty.Wait()
 	}
 	item := this.List.Front()
 	this.List.Remove(item)
 	this.NotFull.Signal()
+	this.NotEmpty.L.Unlock()
 
 	return item.Value
 }
