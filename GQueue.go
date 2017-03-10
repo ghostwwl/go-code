@@ -36,6 +36,13 @@ func NewQueue() *Queue {
 
 func (this *Queue) TaskDone() {
 	this.AllTasksDone.L.Lock()
+	defer func() {
+		err := recover()
+		if err != nil {
+			this.AllTasksDone.L.Unlock()
+			panic(err)
+		}
+	}()
 	unfinished := this.UnfinishedTasks - 1
 	if unfinished <= 0 {
 		if unfinished < 0 {
