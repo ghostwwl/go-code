@@ -27,6 +27,17 @@ const (
 	GFrmDay      = "2006-01-02"
 )
 
+
+func Try(do_handdler func(), catch_handler func(interface{})) {
+	defer func() {
+		if err := recover(); err != nil {
+			catch_handler(err)
+		}
+	}()
+	do_handdler()
+}
+
+
 func Struct2Map(obj interface{}) map[string]interface{} {
 	result := make(map[string]interface{})
 	objT := reflect.TypeOf(obj)
