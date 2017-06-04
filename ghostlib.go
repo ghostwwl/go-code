@@ -124,13 +124,18 @@ func ConvertStrEncode(inStr, inCharset, outCharset string) string {
 	if inCharset == outCharset {
 		return inStr
 	}
-
+	
 	if inCharset == "gbk" || inCharset == "gb2312" {
 		inCharset = "gb18030"
 	}
 
 	// 输入字符串解码为utf-8
-	destr := mahonia.NewDecoder(inCharset).ConvertString(inStr)
+	var destr string
+	if inCharset != "utf8" && inCharset != "utf-8" {
+		destr = mahonia.NewDecoder(inCharset).ConvertString(inStr)
+	} else {
+		destr = inStr
+	}
 
 	if outCharset == "utf8" || outCharset == "utf-8" {
 		return destr
